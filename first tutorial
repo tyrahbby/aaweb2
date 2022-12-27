@@ -1,0 +1,84 @@
+//index.html
+
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>Question 1</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body>
+        <div>Cafe Kamsis Politeknik Mukah PMU</div>
+        <a href="more20"> Age more than 20 Years Old </a> <br>
+        <a href="notmore20"> Age not more than 20 Years Old </a>
+    </body>
+</html>
+
+//servlet.java
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
+public class more20 extends HttpServlet {
+
+    public void init() throws jakarta.servlet.ServletException{
+        System.out.println("The system is ready to be used.");
+    }   
+   
+    public void service(ServletRequest req, ServletResponse res) throws IOException, jakarta.servlet.ServletException {
+        res.setContentType("text/html");
+        PrintWriter out = res.getWriter();
+        System.out.println("The system is processed.");
+        
+        out.println("<!DOCTYPE html>");
+        out.println("<html>");
+        out.println("<head>");
+        out.println("<title>Driving License Company</title>");            
+        out.println("</head>");
+        out.println("<body>");
+        out.println("<h3>You are eligible to apply work at cafe.</h3>");
+        out.println("</body>");
+        out.println("</html>");
+        
+        destroy();
+    }
+    
+    public void destroy(){
+        
+        System.out.println("The system is destroyed.");  
+    }
+}
+
+//web.xml
+
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="3.1" xmlns="http://xmlns.jcp.org/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd">
+    <servlet>
+        <servlet-name>more20</servlet-name>
+        <servlet-class>more20</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>notmore20</servlet-name>
+        <servlet-class>notmore20</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>more20</servlet-name>
+        <url-pattern>/more20</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>notmore20</servlet-name>
+        <url-pattern>/notmore20</url-pattern>
+    </servlet-mapping>
+    <session-config>
+        <session-timeout>
+            30
+        </session-timeout>
+    </session-config>
+</web-app>
