@@ -1,0 +1,515 @@
+//web.xml
+
+ <!DOCTYPE web-app PUBLIC
+ "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
+ "http://java.sun.com/dtd/web-app_2_3.dtd" >
+<web-app>
+    <display-name>Login Demo Using j_security_check</display-name>
+    <!--Defines Security Constraint -->
+    <security-constraint>
+        <display-name>JSP Demo Constraint</display-name>
+        <web-resource-collection>
+            <web-resource-name>cp</web-resource-name>
+            <description/>
+            <url-pattern>/index.jsp</url-pattern>
+            <url-pattern>/viewadmin.jsp</url-pattern>
+            <url-pattern>/updateprocess.jsp</url-pattern>
+            <url-pattern>/updateform.jsp</url-pattern>
+        </web-resource-collection>
+        <auth-constraint>
+            <description/>
+            <role-name>administrator</role-name>
+            <role-name>user</role-name>
+        </auth-constraint>
+    </security-constraint>
+    <!--Defines Login Config -->
+    <login-config>
+        <auth-method>FORM</auth-method>
+        <realm-name>file</realm-name>
+        <form-login-config>
+            <form-login-page>/login.jsp</form-login-page>
+            <form-error-page>/error.jsp</form-error-page>
+        </form-login-config>
+    </login-config>
+    <!--Defines Security Role -->
+    
+     <security-role>
+        <description/>
+        <role-name>administrator</role-name>
+    </security-role>
+    
+     <security-role>
+        <description/>
+        <role-name>user</role-name>
+    </security-role>
+</web-app> 
+
+//administrator.jsp & error.jsp
+
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>Success</title>
+    </head>
+    <body>
+        <h1>Admin Homepage!</h1
+        <a href="index.jsp"> Click to login again </a>
+    </body>
+</html>
+
+//index.html
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Q2</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body>
+        <h1 align="center"> Council of Dato and Datuk Malaysia (MDDM) </h1>
+        
+        <h2 align="center"> <a href="index.jsp">Admin </h2>
+        <h2 align="center"> <a href="register.jsp">Register </h2>
+        <h2 align="center"> <a href="view.jsp">View List of MDDM </h2>
+        
+    </body>
+</html>
+
+//index.jsp
+
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>MDDM</title>
+    </head>
+    <body>
+        <h1>You have success login!</h1>
+        <%= request.getRemoteUser() %>
+        
+        <%if(request.isUserInRole("administrator"))
+        {
+            response.sendRedirect("viewadmin.jsp");
+        }
+        %>
+    </body>
+</html>
+
+//login.jsp
+
+
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>MDDM</title>
+    </head>
+    <body>
+        <h1>LOGIN</h1>
+        <form name="loginform" method="POST" action="j_security_check">
+            <p> Username: <input type="text" name="j_username" size="20"/></p>
+            <p> Password <input type="password" name="j_password" size="20"/></p>
+            <p> <input type="submit" value="Login"/></p>
+        </form>
+    </body>
+</html>
+
+//logout.jsp
+
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>MDDM</title>
+    </head>
+    <body>
+        <h1>Log Out!</h1>
+        
+        <%
+            session.invalidate();
+            response.sendRedirect("index.html");
+        %>
+        
+    </body>
+</html>
+
+//process.jsp
+
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@page import = "java.sql.*,java.util.*"%>
+
+<%
+    String fullname = request.getParameter("fullname");
+    String icno = request.getParameter("icno");
+    String address = request.getParameter("address");
+    String nophone = request.getParameter("nophone");
+    String email = request.getParameter("email");
+    String titlename = request.getParameter("titlename");
+    String awardname = request.getParameter("awardname");
+    
+try
+{
+    Class.forName("com.mysql.cj.jdbc.Driver");
+    Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/detail","root","");
+    Statement st = conn.createStatement();
+    
+    int i = st.executeUpdate("Insert into register (fullname, icno, address, nophone, email, titlename, awardname)" 
+            + "values('"+fullname+"','"+icno+"','"+address+"','"+nophone+"','"+email+"','"+titlename+"','"+awardname+"')");
+    out.println("data saved successfully");
+    out.println(fullname);
+}
+catch (Exception e)
+{
+    System.out.print(e);
+    e.printStackTrace();
+    out.print(e);
+}
+%>
+
+//register.jsp
+
+
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>Student</title>
+    </head>
+    <body align="center">
+        <form action="process.jsp" method="post">
+            <table style="border:black solid 2px">
+                <tr>
+                    <td colspan="3" style="text-decoration:underline">
+                       MDDM
+                    </td>
+                <tr>
+                    <td> Full Name: </td>
+                    <td> <input type="text" name="fullname" required> </td>
+                </tr>
+                
+                <tr>
+                    <td> Identification Card Number: </td>
+                    <td> <input type="text" name="icno" required> </td>
+                </tr>
+                
+                <tr>
+                    <td> Address: </td>
+                    <td> <input type="text" name="address" required> </td>
+                </tr>
+                 
+                <tr>
+                    <td> Phone Number: </td>
+                    <td> <input type="text" name="phoneno" required> </td>
+                </tr>
+                 
+                <tr>
+                    <td>  Email </td>
+                    <td> <input type="text" name="email" required> </td>
+                </tr>
+                
+                <tr>
+                    <td> Title Name </td>
+                    <td><input type="text" name="titlename" required> </td>
+                </tr>
+                
+                <tr>
+                    <td> Award Name </td>
+                    <td><input type="text" name="awardname" required> </td>
+                </tr>
+                
+                <tr>
+                    <td colspan="3" align="center">
+                        <input type="submit" value="register" required>
+                    </td>
+                </tr>
+                
+                </tr>
+            </table>
+        </form>
+    </body>
+</html>
+
+//updateform.jsp
+
+<%@page import="java.sql.DriverManager"%>
+<%@page import="java.sql.ResultSet"%>
+<%@page import="java.sql.Statement"%>
+<%@page import="java.sql.Connection"%>
+
+<%
+String id = request.getParameter("id");
+String driver = "com.mysql.jdbc.Driver";
+String connectionUrl = "jdbc:mysql://localhost:3306/";
+String database = "detail";
+String userid = "root";
+String password ="";
+    try{
+        Class.forName(driver);
+    } catch (ClassNotFoundException e) {
+        e.printStackTrace();
+    }
+    Connection connection = null;
+    Statement statement = null;
+    ResultSet resultSet = null;
+%>
+<%
+    try{
+    connection = DriverManager.getConnection(connectionUrl+database,userid, password);
+    statement=connection.createStatement();
+    String sql ="select * from register where id="+id;
+    resultSet = statement.executeQuery(sql);
+    while(resultSet.next()){
+%>
+
+<html>
+    <head>
+        <title>Admin Confirmation Status</title>
+    </head>
+    <body>
+        <h1> KIS </h1>
+        <form method="post" action="updateprocess.jsp">
+            <input type="hidden" name="id" value="<%=resultSet.getString("id")%>">
+            <table style="border: black solid 2px">
+                <tr>
+                    <td colpsan ="3" style="text-decoration:underline">
+                        MDDM's Data
+                    </td>
+                </tr>
+                <tr>
+                    <td> Result </td><td>:</td>
+                    <td><input type="text" name="result" size="25"
+                               value="<%=resultSet.getString ("result") %>"></td>
+                </tr>
+                <tr>
+                    <td colspan="3" align="center">
+                        <input type="submit" value="Update Student Data">
+                    </td>
+                </tr>
+            </table>
+        </form>
+                <%
+}
+connection.close();
+} catch (Exception e) {
+e.printStackTrace();
+}
+
+         %>
+    </body>
+</html>
+
+//updateprocess.jsp
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1"%>
+<%@ page import="java.sql.*" %>
+<%! String driverName = "com.mysql.jdbc.Driver";%>
+<%!String url = "jdbc:mysql://localhost:3306/detail";%>
+<%!String user = "root";%>
+<%!String psw = "";%>
+<%
+String id = request.getParameter("id");
+String result=request.getParameter("result");
+//String lastname=request.getParameter("lastname");
+//String cityname=request.getParameter("cityname");
+//String email=request.getParameter("email");
+if(id != null)
+{
+Connection con = null;
+PreparedStatement ps = null;
+int personID = Integer.parseInt(id);
+out.print(id);
+try
+{
+Class.forName(driverName);
+con = DriverManager.getConnection(url,user,psw);
+String sql="Update register set id=?,result=? where id="+id;
+ps = con.prepareStatement(sql);
+ps.setString(1,id);
+ps.setString(2,result);
+//ps.setString(3, lastname);
+//ps.setString(4, cityname);
+//ps.setString(5, email);
+int i = ps.executeUpdate();
+if(i > 0)
+{
+out.print("Record Updated Successfully");
+}
+else
+{
+out.print("There is a problem in updating Record.");
+}
+}
+catch(SQLException sql)
+{
+request.setAttribute("error", sql);
+out.println(sql);
+}
+}
+%>
+
+//view.jsp
+
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@page import="java.sql.DriverManager"%>
+<%@page import="java.sql.ResultSet"%>
+<%@page import="java.sql.Statement"%>
+<%@page import="java.sql.Connection"%>
+
+<%
+String id = request.getParameter("id");
+String driver = "com.mysql.jdbc.Driver";
+String connectionUrl = "jdbc:mysql://localhost:3306/";
+String database = "detail";
+String userid = "root";
+String password ="";
+try{
+Class.forName(driver);
+} catch (ClassNotFoundException e) {
+e.printStackTrace();
+}
+Connection connection = null;
+Statement statement = null;
+ResultSet resultSet = null;
+%>
+
+<html>
+    <head>
+        <title> View List of register of Malaysian Human Resource Management System </title>
+    </head>
+    <body>
+        <h1> Register of KIS </h1>
+        <table border ="1">
+            <tr>
+                <td>Full Name </td>
+                <td>Identification Card Number </td>
+                <td>Address </td>
+                <td> Phone Number </td>
+                <td>Email</td>
+                <td>Ttile Name</td>
+                <td>Award Name </td>
+                <td>Result</td>
+            </tr>
+             <%
+   try{
+       connection = DriverManager.getConnection(connectionUrl+database, userid, password);
+       statement=connection.createStatement();
+       String sql = "select * from register";
+       resultSet = statement.executeQuery(sql);
+       while(resultSet.next()){
+             %>
+            <tr>
+                <td><%=resultSet.getString("fullname") %></td>
+                <td><%=resultSet.getString("icno") %></td>
+                <td><%=resultSet.getString("address") %></td>
+                
+                <td><%=resultSet.getString("nophone") %></td>
+                <td><%=resultSet.getString("email") %></td>
+                <td><%=resultSet.getString("titlename") %></td>
+                <td><%=resultSet.getString("awardname") %></td>
+                <td><%=resultSet.getString("result") %></td>
+        
+                </td>
+            </tr>
+            <%}
+connection.close();
+}
+catch (Exception e) {
+e.printStackTrace();
+} %>    
+</table>
+</body>
+</html>
+
+//viewadmin.jsp
+
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@page import="java.sql.DriverManager"%>
+<%@page import="java.sql.ResultSet"%>
+<%@page import="java.sql.Statement"%>
+<%@page import="java.sql.Connection"%>
+
+<%
+String id = request.getParameter("id");
+String driver = "com.mysql.jdbc.Driver";
+String connectionUrl = "jdbc:mysql://localhost:3306/";
+String database = "detail";
+String userid = "root";
+String password ="";
+try{
+Class.forName(driver);
+} catch (ClassNotFoundException e) {
+e.printStackTrace();
+}
+Connection connection = null;
+Statement statement = null;
+ResultSet resultSet = null;
+%>
+
+<html>
+    <head>
+        <title>KIS</title>
+    </head>
+    <body>
+        <h1> Kamsis Information System </h1>
+        <h2> <a href="logout.jsp"> Click here to logout </a>
+        <table border ="1">
+            <tr>
+                <td>Full Name </td>
+                <td>Identification Card Number </td>
+                <td>Address </td>
+                <td>Phone Number </td>
+                <td>Email</td>
+                <td>Title Name</td>
+                <td>Award Name </td>
+                <td>Result</td>
+                <td>Action</td>
+            </tr>
+             <%
+   try{
+       connection = DriverManager.getConnection(connectionUrl+database, userid, password);
+       statement=connection.createStatement();
+       String sql = "select * from register";
+       resultSet = statement.executeQuery(sql);
+       while(resultSet.next()){
+             %>
+            <tr>
+                <td><%=resultSet.getString("fullname") %></td>
+                <td><%=resultSet.getString("icno") %></td>
+                <td><%=resultSet.getString("address") %></td>
+                <td><%=resultSet.getString("nophone") %></td>
+                <td><%=resultSet.getString("email") %></td>
+                <td><%=resultSet.getString("titlename") %></td>
+                <td><%=resultSet.getString("awardname") %></td>
+                <td><%=resultSet.getString("result") %></td>
+                <td>
+                    <a href="updateform.jsp?id=<%=resultSet.getString("id")%>">Update</a>
+        
+                </td>
+            </tr>
+            <%}
+connection.close();
+}
+catch (Exception e) {
+e.printStackTrace();
+} %>    
+</table>
+</body>
+</html>
+
+//tomcat.user
+
+<?xml version="1.0" encoding="UTF-8"?>
+
+<tomcat-users xmlns="http://tomcat.apache.org/xml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.0" xsi:schemaLocation="http://tomcat.apache.org/xml tomcat-users.xsd">
+ 
+    <user password="admin123" roles="administrator" username="admin"/>
+    <user password="user123" roles="user" username="user"/>
+    <user password="root" roles="manager-script,admin" username="root"/>
+    
+</tomcat-users>
